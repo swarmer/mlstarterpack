@@ -1,0 +1,11 @@
+[MESSAGES CONTROL]
+disable=
+    attribute-defined-outside-init,
+    bad-continuation,
+    fixme,
+    missing-docstring,
+    no-self-use,
+    too-few-public-methods,
+    unnecessary-pass,
+    unused-wildcard-import,
+    wildcard-import

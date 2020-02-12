@@ -6,7 +6,7 @@ from typing import *
 import mlstarterpack as mlsp
 
 
-DATA_DIR_STRUCTURE = {
+DATA_DIR_STRUCTURE: Dict[str, dict] = {
     'datasets': {},
     'source': {
         'images': {},
@@ -24,7 +24,7 @@ def create_minimal_data_dirs(data_dir: Path):
 
 
 def find_metadata_csvs(where: Path) -> Iterable[Path]:
-    for dirpath, dirnames, filenames in os.walk(str(where)):
+    for dirpath, _dirnames, filenames in os.walk(str(where)):
         for filename in filenames:
             file_path = Path(dirpath) / filename
 
@@ -35,7 +35,7 @@ def find_metadata_csvs(where: Path) -> Iterable[Path]:
 
 
 def find_dataset_csvs(where: Path) -> Iterable[Path]:
-    for dirpath, dirnames, filenames in os.walk(str(where)):
+    for dirpath, _dirnames, filenames in os.walk(str(where)):
         for filename in filenames:
             file_path = Path(dirpath) / filename
 

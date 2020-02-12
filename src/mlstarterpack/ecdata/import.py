@@ -33,7 +33,7 @@ def import_source_data(params: PathParameters) -> Dict[str, str]:
     from source names to renamed ones
     """
     object_name_map = {}
-    for dirpath, dirnames, filenames in os.walk(str(params.data_drop_dir / 'source')):
+    for dirpath, _dirnames, filenames in os.walk(str(params.data_drop_dir / 'source')):
         rel_dirpath = str(Path(dirpath).relative_to(params.data_drop_dir / 'source'))
         if rel_dirpath in ('.', 'metadata'):
             continue
@@ -57,7 +57,7 @@ def import_source_data(params: PathParameters) -> Dict[str, str]:
                 )
                 new_path = params.output_dir / new_name
 
-                object_name_map[original_name] = new_name
+                object_name_map[original_name] = str(new_name)
 
                 shutil.copy(str(file_path), str(new_path))
 

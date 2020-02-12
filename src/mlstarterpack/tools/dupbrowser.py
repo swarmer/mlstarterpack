@@ -47,7 +47,7 @@ class ImagePair:
     distance: float
 
 
-class DuplicateBrowser:
+class DuplicateBrowser:  # pylint: disable=too-many-instance-attributes
     def __init__(self, image_pairs: List[ImagePair], data_root: Path, output_path: str):
         self.data_root = data_root
 
@@ -93,7 +93,9 @@ class DuplicateBrowser:
         self.image_right = tk.Label(self.window)
         self.image_right.grid(row=0, column=2, columnspan=2, sticky='NESW')
 
-        self.delete_left_button = tk.Button(self.window, text='Delete left', command=self.delete_left)
+        self.delete_left_button = tk.Button(
+            self.window, text='Delete left', command=self.delete_left
+        )
         self.delete_left_button.grid(row=1, column=0, columnspan=1, sticky='NESW')
 
         self.prev_button = tk.Button(self.window, text='Prev', command=self.prev)
@@ -102,10 +104,14 @@ class DuplicateBrowser:
         self.next_button = tk.Button(self.window, text='Next', command=self.next)
         self.next_button.grid(row=1, column=2, columnspan=1, sticky='NESW')
 
-        self.delete_right_button = tk.Button(self.window, text='Delete right', command=self.delete_right)
+        self.delete_right_button = tk.Button(
+            self.window, text='Delete right', command=self.delete_right
+        )
         self.delete_right_button.grid(row=1, column=3, columnspan=1, sticky='NESW')
 
-        self.save_all_button = tk.Button(self.window, text='Save duplicates list', command=self.save_deleted)
+        self.save_all_button = tk.Button(
+            self.window, text='Save duplicates list', command=self.save_deleted
+        )
         self.save_all_button.grid(row=2, column=1, columnspan=2, sticky='NESW')
 
     @property

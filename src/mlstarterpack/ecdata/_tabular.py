@@ -23,7 +23,7 @@ def save_dataframe(df: pd.DataFrame, path: Path):
 
 
 def find_table_files(where: Path) -> Iterable[Path]:
-    for dirpath, dirnames, filenames in os.walk(str(where)):
+    for dirpath, _dirnames, filenames in os.walk(str(where)):
         for filename in filenames:
             file_path = Path(dirpath) / filename
             if not file_path.suffix or file_path.suffix.lower() not in TABLE_EXTENSIONS:

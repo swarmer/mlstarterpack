@@ -40,7 +40,7 @@ def load_img(image_path: Union[str, Path]) -> Image.Image:
 
 
 def find_images(where: Path) -> Iterable[Path]:
-    for dirpath, dirnames, filenames in os.walk(str(where)):
+    for dirpath, _dirnames, filenames in os.walk(str(where)):
         for filename in filenames:
             file_path = Path(dirpath) / filename
             if not file_path.suffix or file_path.suffix.lower() not in IMAGE_EXTENSIONS:

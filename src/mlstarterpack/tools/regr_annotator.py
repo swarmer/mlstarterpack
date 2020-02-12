@@ -35,7 +35,7 @@ def read_annotations(csv_path):
     return result
 
 
-class ImageSelector:
+class ImageSelector:  # pylint: disable=too-many-instance-attributes
     def __init__(self, images_root, image_names, output_path, annotations=None):
         self.annotations = annotations or {}
         self.current_image = None

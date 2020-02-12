@@ -25,7 +25,7 @@ class PreloadingIterator:
         self.resolve_func = resolve_func
         self.buf_size = buf_size
 
-        self._future_buffer = deque(maxlen=buf_size)
+        self._future_buffer: Deque[futures.Future] = deque(maxlen=buf_size)
         for _ in range(buf_size):
             self._enqueue_one()
 

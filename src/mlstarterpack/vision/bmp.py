@@ -54,7 +54,7 @@ def _process_image(job: ConvertJob):
 
         image.save(job.target_path)
         print(f'Processed {job.source_path} -> {job.target_path}')
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
         traceback.print_exc()
 
 

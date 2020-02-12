@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import *
 
 try:
-    import tensorflow as tf
     import tensorflow.keras as tfk
 except ImportError as exc:
     raise ImportError('This module requires tensorflow extra feature') from exc
@@ -26,7 +25,7 @@ class TfDirSerializableModel(DirSerializableModel, tfk.Model):
         return epoch, status
 
     @classmethod
-    def load_from_dir(
+    def load_from_dir(  # pylint: disable=arguments-differ
         cls,
         model_dir: Path,
         training_mode: bool = False,

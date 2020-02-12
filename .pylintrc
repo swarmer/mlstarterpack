@@ -2,10 +2,18 @@
 disable=
     attribute-defined-outside-init,
     bad-continuation,
+    duplicate-code,
     fixme,
     missing-docstring,
+    no-else-raise,
+    no-else-return,
+    no-member,
     no-self-use,
     too-few-public-methods,
     unnecessary-pass,
     unused-wildcard-import,
     wildcard-import
+
+
+[FORMAT]
+good-names=i,j,k,df,ex,exc,id,ok,x,y,z,T

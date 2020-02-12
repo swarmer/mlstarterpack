@@ -42,7 +42,7 @@ def downsample_dataset(df: pd.DataFrame, fraction: float, min_count: int) -> pd.
         return df.sample(frac=fraction)
 
 
-def main():
+def main():  # pylint: disable=too-many-locals
     args = parse_arguments()
 
     if args.output_data_root.exists():
@@ -71,7 +71,7 @@ def main():
         downsampled_df.to_csv(downsampled_path, header=None, index=False)
 
     print('Copying source data...')
-    for dirpath, dirnames, filenames in os.walk(args.input_data_root / 'source/'):
+    for dirpath, _dirnames, filenames in os.walk(args.input_data_root / 'source/'):
         if Path(dirpath).relative_to(args.input_data_root) == Path('source/metadata/'):
             continue
 

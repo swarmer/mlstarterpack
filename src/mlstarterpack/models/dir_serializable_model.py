@@ -7,7 +7,7 @@ from typing import *
 import yaml
 
 
-M = TypeVar('M', bound='DirSerializableModel')
+M = TypeVar('M', bound='DirSerializableModel')  # pylint: disable=invalid-name
 
 
 class DirSerializableModel(abc.ABC):
@@ -17,8 +17,8 @@ class DirSerializableModel(abc.ABC):
         return {}
 
     @classmethod
-    def from_config(cls, config: dict) -> DirSerializableModel:
-        return cls(**config)
+    def from_config(cls: Type[M], config: dict) -> M:
+        return cls(**config)  # type: ignore
 
     @classmethod
     def load_config_from_dir(cls, model_dir: Path) -> dict:
@@ -57,6 +57,7 @@ class DirSerializableModel(abc.ABC):
         """
         ...
 
-    @abc.abstractclassmethod
-    def load_from_dir(cls: Type[M], model_dir: Path) -> M:
+    @classmethod
+    @abc.abstractmethod
+    def load_from_dir(cls: Type[M], model_dir: Path) -> M:  # type: ignore
         ...

@@ -37,18 +37,21 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def row_pairwise_distances(m):
+def row_pairwise_distances(dist_matrix):
     dists = tf.sqrt(
-        -2 * m @ tf.transpose(m)  # square
-        + tf.math.reduce_sum(m ** 2, axis=1)  # broadcasted over rows
-        + tf.expand_dims(tf.math.reduce_sum(m ** 2, axis=1), 0)  # broadcasted over columns
+        -2 * dist_matrix @ tf.transpose(dist_matrix)  # square
+        + tf.math.reduce_sum(dist_matrix ** 2, axis=1)  # broadcasted over rows
+        + tf.expand_dims(  # broadcasted over columns
+            tf.math.reduce_sum(dist_matrix ** 2, axis=1),
+            0,
+        )
     )
     diag_len = tf.size(tf.linalg.diag_part(dists))
     tf.linalg.set_diag(dists, tf.broadcast_to(0.0, [diag_len]))
     return dists
 
 
-def main():
+def main():  # pylint: disable=too-many-locals
     args = parse_arguments()
 
     if Path(args.output_file).exists():
@@ -91,7 +94,7 @@ def main():
 
     image_pairs = []
     for i, distance in zip(lowest_indexes, lowest_distances):
-        img1, img2 = np.unravel_index(i, distances.shape)
+        img1, img2 = np.unravel_index(i, distances.shape)  # pylint: disable=unbalanced-tuple-unpacking
         if img1 > img2:
             # Only show upper triangle of distance matrix
             continue

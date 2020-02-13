@@ -1,7 +1,9 @@
 import abc
 from contextlib import ExitStack
 from dataclasses import asdict
+import json
 import os
+from pathlib import Path
 from typing import *
 from typing import TextIO
 
@@ -10,17 +12,41 @@ import yaml
 
 class SerializableDataclass(abc.ABC):
     @classmethod
-    def from_yml_file(cls, yml_file: Union[os.PathLike, TextIO]):
-        with ExitStack() as stack:
-            if isinstance(yml_file, os.PathLike):
-                yml_file = stack.enter_context(open(yml_file))
+    def get_serializer(cls, file: Union[os.PathLike, TextIO]) -> Any:
+        if not isinstance(file, os.PathLike):
+            raise ValueError(f'Cannot guess file serializer for {file}')
 
-            hp_data = yaml.load(yml_file, Loader=yaml.SafeLoader)
+        path = Path(file)
+        if path.suffix == '.json':
+            return json
+        elif path.suffix in ('.yml', '.yaml'):
+            return yaml
+        else:
+            raise ValueError(f'Cannot guess file serializer for {file}')
+
+    @classmethod
+    def from_file(cls, file: Union[os.PathLike, TextIO], serializer: Any = None):
+        with ExitStack() as stack:
+            if isinstance(file, os.PathLike):
+                file = stack.enter_context(open(file))
+
+            if serializer is None:
+                serializer = cls.get_serializer(file)
+
+            if serializer is yaml:
+                serializer_params = {'Loader': yaml.SafeLoader}
+            else:
+                serializer_params = {}
+
+            hp_data = serializer.load(file, **serializer_params)
             return cls(**hp_data)  # type: ignore
 
-    def to_yml_file(self, yml_file: Union[os.PathLike, TextIO]):
+    def to_file(self, file: Union[os.PathLike, TextIO], serializer: Any = None):
         with ExitStack() as stack:
-            if isinstance(yml_file, os.PathLike):
-                yml_file = stack.enter_context(open(yml_file, 'x'))
+            if isinstance(file, os.PathLike):
+                file = stack.enter_context(open(file, 'x'))
 
-            yaml.dump(asdict(self), yml_file)
+            if serializer is None:
+                serializer = self.get_serializer(file)
+
+            serializer.dump(asdict(self), file)

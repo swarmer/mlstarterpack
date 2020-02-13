@@ -22,8 +22,8 @@ def parse_arguments():
             'decoding is required'
         ),
     )
-    convert_parser.add_argument('sourcedir', type=str, nargs=1)
-    convert_parser.add_argument('targetdir', type=str, nargs=1)
+    convert_parser.add_argument('sourcedir', type=str)
+    convert_parser.add_argument('targetdir', type=str)
     convert_parser.add_argument(
         '--target-smaller-size', type=int, required=False, default=224,
     )

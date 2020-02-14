@@ -27,11 +27,11 @@ class SerializableDataclass(abc.ABC):
     @classmethod
     def from_file(cls, file: Union[os.PathLike, TextIO], serializer: Any = None):
         with ExitStack() as stack:
-            if isinstance(file, os.PathLike):
-                file = stack.enter_context(open(file))
-
             if serializer is None:
                 serializer = cls.get_serializer(file)
+
+            if isinstance(file, os.PathLike):
+                file = stack.enter_context(open(file))
 
             if serializer is yaml:
                 serializer_params = {'Loader': yaml.SafeLoader}
@@ -43,10 +43,10 @@ class SerializableDataclass(abc.ABC):
 
     def to_file(self, file: Union[os.PathLike, TextIO], serializer: Any = None):
         with ExitStack() as stack:
-            if isinstance(file, os.PathLike):
-                file = stack.enter_context(open(file, 'x'))
-
             if serializer is None:
                 serializer = self.get_serializer(file)
+
+            if isinstance(file, os.PathLike):
+                file = stack.enter_context(open(file, 'x'))
 
             serializer.dump(asdict(self), file)

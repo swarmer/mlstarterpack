@@ -25,7 +25,12 @@ class SerializableDataclass(abc.ABC):
             raise ValueError(f'Cannot guess file serializer for {file}')
 
     @classmethod
-    def from_file(cls, file: Union[os.PathLike, TextIO], serializer: Any = None):
+    def from_file(
+        cls,
+        file: Union[os.PathLike, TextIO],
+        serializer: Any = None,
+        collate: bool = False,
+    ):
         with ExitStack() as stack:
             if serializer is None:
                 serializer = cls.get_serializer(file)
@@ -39,6 +44,12 @@ class SerializableDataclass(abc.ABC):
                 serializer_params = {}
 
             hp_data = serializer.load(file, **serializer_params)
+
+            if collate:
+                for key, value in hp_data.copy().items():
+                    type_ = cls.__dataclass_fields__[key].type
+                    hp_data[key] = type_(value)
+
             return cls(**hp_data)  # type: ignore
 
     def to_file(self, file: Union[os.PathLike, TextIO], serializer: Any = None):

@@ -47,7 +47,7 @@ class SerializableDataclass(abc.ABC):
 
             if collate:
                 for key, value in hp_data.copy().items():
-                    type_ = cls.__dataclass_fields__[key].type
+                    type_ = cls.__dataclass_fields__[key].type  # type: ignore
                     hp_data[key] = type_(value)
 
             return cls(**hp_data)  # type: ignore

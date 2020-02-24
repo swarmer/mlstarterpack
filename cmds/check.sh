@@ -16,10 +16,3 @@ py.test \
     && echo "${green}OK${normal}" \
     || exit 1
 echo
-
-echo "${bold}pylint${normal}"
-pylint src/mlstarterpack tests \
-    && echo -e "${green}OK${normal}\n" \
-    || exit 1
-
-echo "${green}All OK${normal}"

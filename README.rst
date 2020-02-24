@@ -21,4 +21,5 @@ A semi-random collection of utilities to kickstart ml projects
 Features
 --------
 
-* TODO
+* Model loading and saving
+* Dataset mangement utilities

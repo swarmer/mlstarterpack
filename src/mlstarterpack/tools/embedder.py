@@ -4,11 +4,16 @@ import argparse
 from functools import partial
 from pathlib import Path
 from typing import *
-
+import multiprocessing as mp
 import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
+from plant_analysis.models.species.model import SpeciesClassifier
+from plant_analysis.models.species.data import SpeciesInferenceDataset
+from tensorflow.keras.models import Model
+
+
 try:
     import tensorflow as tf
     from tensorflow import keras as tfk
@@ -26,41 +31,36 @@ def parse_arguments():
         help='Path to the data root directory',
     )
     parser.add_argument('--output', type=str, help='Path to the output parquet file')
+    parser.add_argument ('--model-path', type=Path, required=False, help='Path to the model')
     return parser.parse_args()
 
 
-def get_model() -> tfk.Model:
+def get_model(model_path) -> tfk.Model:
     assert tfk.backend.image_data_format() == 'channels_last'
-    model = tfk.applications.ResNet50(
-        include_top=False,
-        weights='imagenet',
-        pooling='avg',
-    )
+    model = SpeciesClassifier.load_from_dir(model_path)
+    def call(inputs, training=None, mask=None):
+        return model.backbone(inputs)
+    model.call = call
     return model
 
 
 def compute_embeddings(model: tfk.Model, image_paths: List[Path]):
-    def generator_factory():
-        return (
-            np.array(load_img(path), np.float32)
-            for path in image_paths
-        )
+    samples = SpeciesInferenceDataset(image_paths)
     dataset = (
-        tf.data.Dataset.from_generator(generator_factory, tf.float32)
-        .map(partial(tf.image.resize_with_crop_or_pad, target_height=224, target_width=224))
-        .map(tfk.applications.resnet50.preprocess_input)
+        samples.to_tf_dataset(2048)
         .batch(32)
         .prefetch(3)
-    )
+    )    
     embeddings = model.predict(dataset, verbose=1)
     return embeddings
 
 
 def main():
+    mp.set_start_method('spawn')
     args = parse_arguments()
     images_dir = args.images_dir
 
-    model = get_model()
+    model = get_model(args.model_path)
 
     image_paths = list(find_images(images_dir))
     embeddings = compute_embeddings(model, image_paths)

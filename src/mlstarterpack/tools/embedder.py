@@ -48,7 +48,7 @@ def compute_embeddings(model: tfk.Model, image_paths: List[Path]):
     samples = SpeciesInferenceDataset(image_paths)
     dataset = (
         samples.to_tf_dataset(2048)
-        .batch(32)
+        .batch(128)
         .prefetch(3)
     )    
     embeddings = model.predict(dataset, verbose=1)

@@ -43,17 +43,22 @@ def get_model(model_path) -> tfk.Model:
     model.call = call
     return model
 
-
-def compute_embeddings(model: tfk.Model, image_paths: List[Path]):
+def get_model_cls(model_path) -> tfk.Model:
+    assert tfk.backend.image_data_format() == 'channels_last'
+    model_cls = SpeciesClassifier.load_from_dir(model_path)
+    return model_cls
+    
+def compute_embeddings(model: tfk.Model, model_cls, image_paths: List[Path]):
+#def compute_embeddings(model: tfk.Model, image_paths: List[Path]):
     samples = SpeciesInferenceDataset(image_paths)
     dataset = (
         samples.to_tf_dataset(2048)
-        .batch(128)
+        .batch(1)
         .prefetch(3)
     )    
     embeddings = model.predict(dataset, verbose=1)
-    return embeddings
-
+    classes = model_cls.predict(dataset, verbose=1)
+    return embeddings, classes
 
 def main():
     mp.set_start_method('spawn')
@@ -61,13 +66,16 @@ def main():
     images_dir = args.images_dir
 
     model = get_model(args.model_path)
+    model_cls = get_model_cls(args.model_path)
 
     image_paths = list(find_images(images_dir))
-    embeddings = compute_embeddings(model, image_paths)
-
+    embeddings, classes = compute_embeddings(model, model_cls, image_paths)
+    #embeddings = compute_embeddings(model, image_paths)
+    
     df = pd.DataFrame({
         'image_paths': [str(path.relative_to(args.data_root)) for path in image_paths],
         'embeddings': list(embeddings),
+        'classes': list(classes),
     })
     table = pa.Table.from_pandas(df)
     pq.write_table(table, args.output)
